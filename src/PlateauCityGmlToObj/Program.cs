@@ -25,13 +25,16 @@ namespace CityGMLTest
                 Console.WriteLine("基準点を指定しない場合は、モデル全体の緯度、経度、高度 の最小値が原点になります。");
                 Console.WriteLine(".obj ファイルは outputフォルダ以下に出力されます。");
                 Console.WriteLine();
-                Console.WriteLine("使い方: CityGMLToObj .gmlファイルのパス [[基準点となる緯度] [経度] [高度] [緯度の下限] [経度の下限] [緯度の上限] [経度の上限]]");
+                Console.WriteLine("使い方: CityGMLToObj .gmlファイルのパス [[基準点となる緯度] [経度] [高度] [緯度の下限] [経度の下限] [緯度の上限] [経度の上限]] [--output] [出力先のパス]");
                 Console.WriteLine();
                 Console.WriteLine("例1) シンプルな利用方法(テクスチャがある場合はフルパスを指定してください)");
                 Console.WriteLine("CityGMLToObj sample.gml");
                 Console.WriteLine();
                 Console.WriteLine("例2) 北緯 35.000度 東経 135.000度 高度100m を原点として座標を変換");
                 Console.WriteLine("CityGMLToObj sample.gml 35.000 135.000 0");
+                Console.WriteLine();
+                Console.WriteLine("例3) 北緯 35.000度 東経 135.000度 高度100m を原点として座標を変換し､ 指定したパスへ出力");
+                Console.WriteLine("CityGMLToObj sample.gml 35.000 135.000 0 --output path/to/your/directory/");
                 Console.WriteLine();
                 Console.WriteLine("何かキーを押してください...");
                 Console.ReadKey();
@@ -41,8 +44,17 @@ namespace CityGMLTest
                 try
                 {
                     Assembly exePath = Assembly.GetEntryAssembly();
-                    string path = Path.Combine(Path.GetDirectoryName(exePath.Location), "output", Path.GetFileNameWithoutExtension(args[0]));
-                    if(args.Length == 4)
+                    string fileName = Path.GetFileNameWithoutExtension(args[0]);
+                    string path = Path.Combine(Path.GetDirectoryName(exePath.Location), "output", fileName);
+                    bool isOutputSpecified = false;
+                    for (var i = 0; i < args.Length; i++)
+                    {
+                        if (args[i] != "-o" && args[i] != "--output") continue;
+                        path = Path.Combine(args[i + 1], fileName);
+                        isOutputSpecified = true;
+                        break;
+                    }
+                    if(args.Length == 4 + (isOutputSpecified ? 2 : 0))
                     {
                         Position p = new Position
                         {
@@ -52,7 +64,7 @@ namespace CityGMLTest
                         };
                         CreateModel(args[0], path, p);
                     }
-                    else if(args.Length == 8)
+                    else if(args.Length == 8 + (isOutputSpecified ? 2 : 0))
                     {
                         Position p = new Position
                         {
@@ -71,7 +83,6 @@ namespace CityGMLTest
                             Longitude = Convert.ToDouble(args[7]),
                         };
                         CreateModel(args[0], path, p,lower, upper);
-
                     }
                     else
                     {
