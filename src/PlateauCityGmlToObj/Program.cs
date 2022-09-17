@@ -153,6 +153,7 @@ namespace CityGMLTest
             // ヘッダ
             Console.WriteLine($"Origin: {origin.Latitude},{origin.Longitude},{origin.Altitude}\t\t\t\t\t");
             Console.WriteLine($"ID\tLatitude\tLongitude\tAltitude\tTriangles\tName");
+            Console.CursorVisible = false;
             for (int i = 0; i < buildings.Length; i++)
             {
                 try
@@ -162,8 +163,10 @@ namespace CityGMLTest
                     mg.SaveAsObj(Path.Combine(outputPath, b.Id + ".obj"));
 
                     // ステータス表示
-                    int triangles = b.LOD2Solid != null ? b.LOD2Solid.Length : b.LOD1Solid.Length;
-                    Console.WriteLine($"{b.Id}\t{b.LowerCorner.Latitude:F8}\t{b.LowerCorner.Longitude:F8}\t{b.LowerCorner.Altitude}\t{triangles}\t{b.Name}");
+                    //int triangles = b.LOD2Solid != null ? b.LOD2Solid.Length : b.LOD1Solid.Length;
+                    //Console.WriteLine($"{b.Id}\t{b.LowerCorner.Latitude:F8}\t{b.LowerCorner.Longitude:F8}\t{b.LowerCorner.Altitude}\t{triangles}\t{b.Name}");
+                    Console.Write($"{i}/{buildings.Length} buildings");
+                    Console.SetCursorPosition(0, Console.CursorTop);
                 }
                 catch(Exception ex)
                 {
@@ -171,6 +174,8 @@ namespace CityGMLTest
                 }
 
             }
+            Console.CursorVisible = false;
+            Console.WriteLine($"{buildings.Length} buildings have been successfully converted!");
             return origin;
         }
 
